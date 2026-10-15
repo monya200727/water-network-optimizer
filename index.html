@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Water Distribution Network Optimizer</title>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css"></head><body><div class="wrap">
+<h1>Water Distribution Network Optimizer</h1>
+<p class="sub">Draw reservoirs, junctions and neighborhoods, connect them with pipes, and compute the maximum water delivery with Edmonds-Karp or Ford-Fulkerson. The tool finds the minimum cut, flags bottleneck pipes and suggests capacity upgrades.</p>
+<div class="bar" id="tools">
+ <button data-t="move" class="on">Move / select</button><button data-t="r">Reservoir</button><button data-t="n">Neighborhood</button><button data-t="j">Junction</button><button data-t="pipe">Pipe</button><button data-t="del">Delete</button>
+ <label>New pipe capacity<input id="cap" type="number" min="1" value="10"></label><label>New pipe cost<input id="cost" type="number" min="0" value="2"></label>
+ <button id="sample">Load sample city</button><button id="clear">Clear</button>
+</div>
+<div class="card"><canvas id="cv" width="900" height="520"></canvas><p class="hint" id="hint"></p>
+ <div class="sel" id="sel" hidden><b id="selname"></b><label>Capacity<input id="selcap" type="number" min="0"></label><label>Cost<input id="selcost" type="number" min="0"></label><button id="selapply">Apply</button><button id="selburst">Burst pipe</button><button id="seldel">Delete pipe</button></div>
+ <div class="leg"><span><i style="background:var(--acc)"></i>reservoir (source)</span><span><i style="background:var(--ok)"></i>neighborhood (sink)</span><span><i style="background:var(--panel);border:1px solid var(--mut)"></i>junction</span><span>Pipe labels show flow/capacity. Color goes from blue to red as a pipe fills. Dashed red pipes are the minimum cut (or a burst pipe). The amber glow is the current augmenting path.</span></div>
+</div>
+<div class="bar">
+ <label>Algorithm<select id="algo"><option value="ek">Edmonds-Karp (BFS)</option><option value="ff">Ford-Fulkerson (DFS)</option><option value="mcmf">Min-cost max-flow (cheapest path)</option></select></label>
+ <label>Speed<input type="range" id="spd" min="1" max="100" value="60"></label>
+ <button class="p" id="run">Run</button><button id="step">Step</button><button id="fin">Finish</button><button id="reset">Reset flow</button>
+</div>
+<div class="grid">
+ <div class="card"><h2>Progress</h2><div id="stats"></div><ol id="log"></ol></div>
+ <div class="card"><h2>Analysis report</h2><label class="up">Upgrade size (units per pipe)<input id="upstep" type="number" min="1" value="5"></label><div id="rep"></div></div>
+</div>
+<div class="card" style="margin-top:14px"><h2>Failure and vulnerability analysis</h2><p class="note">What if a pipe bursts, or a reservoir or junction goes offline? Each element is removed in turn, the maximum flow is recomputed and the damage is ranked. Press Simulate to see the burst on the map.</p>
+ <div style="display:flex;gap:8px;margin:8px 0"><button class="p" id="vbtn">Analyse failures</button><button id="repair">Repair all pipes</button></div><div id="vuln"></div></div>
+<div class="card" style="margin-top:14px"><h2>Algorithm benchmark</h2><p class="note">Random networks of growing size are solved by Ford-Fulkerson, Edmonds-Karp and Dinic. All three must give the same maximum flow; the table and chart show how much work and time each one needs. Complexities: Ford-Fulkerson O(E·f), Edmonds-Karp O(V·E²), Dinic O(V²·E).</p>
+ <button class="p" id="benchbtn">Run benchmark</button><canvas id="bc" width="900" height="300" style="aspect-ratio:900/300;margin:10px 0;cursor:default"></canvas><div class="tw"><table id="bt"></table></div></div>
+</div>
+<script src="utils.js"></script>
+<script src="flow.js"></script>
+<script src="graph.js"></script>
+<script src="render.js"></script>
+<script src="editor.js"></script>
+<script src="app.js"></script>
+<script src="analysis.js"></script>
+</body></html>
